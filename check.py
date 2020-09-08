@@ -132,7 +132,7 @@ def selfcheck(name, birth, area, schoolname, schoollevel):
     name = encrypt(name)
     birth = encrypt(birth)
     info=schoolinfo(area,schoollevel)
-    url = 'https://'+info["schoolurl"]+'hcs.eduro.go.kr/school?lctnScCode='+str(info["schoolcode"])+'&schulCrseScCode='+str(info["schoollevel"])+'&orgName='+schoolname+'&currentPageNo=1'
+    url = 'https://'+info["schoolurl"]+'hcs.eduro.go.kr/school?lctnScCode=0'+str(info["schoolcode"])+'&schulCrseScCode='+str(info["schoollevel"])+'&orgName='+schoolname+'&currentPageNo=1'
     response = requests.get(url)
     school_infos = json.loads(response.text)
     schoolcode=school_infos["schulList"][0]["orgCode"]
