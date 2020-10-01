@@ -33,28 +33,28 @@ level5=['특수학교', '특']
 def schoolinfo(area,level):
     info={}
     if area in area1:
-        schoolcode=01
+        schoolcode="01"
         schoolurl="sen"
     if area in area2:
-        schoolcode=02
+        schoolcode="02"
         schoolurl="pen"
     if area in area3:
-        schoolcode=03
+        schoolcode="03"
         schoolurl="dge"
     if area in area4:
-        schoolcode=04
+        schoolcode="04"
         schoolurl="ice"
     if area in area5:
-        schoolcode=05
+        schoolcode="05"
         schoolurl="gen"
     if area in area6:
-        schoolcode=06
+        schoolcode="06"
         schoolurl="dje"
     if area in area7:
-        schoolcode=07
+        schoolcode="07"
         schoolurl="use"
     if area in area8:
-        schoolcode=08
+        schoolcode="08"
         schoolurl="sje"
     if area in area10:
         schoolcode=10
