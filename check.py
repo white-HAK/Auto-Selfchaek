@@ -132,15 +132,17 @@ def selfcheck(name, birth, area, schoolname, schoollevel):
     name = encrypt(name)
     birth = encrypt(birth)
     info=schoolinfo(area,schoollevel)
-    url = 'https://'+info["schoolurl"]+'hcs.eduro.go.kr/school?lctnScCode='+str(info["schoolcode"])+'&schulCrseScCode='+str(info["schoollevel"])+'&orgName='+schoolname+'&currentPageNo=1'
+    url = 'https://hcs.eduro.go.kr/v2/searchSchool?lctnScCode='+str(info["schoolcode"])+'&schulCrseScCode='+str(info["schoollevel"])+'&orgName='+schoolname+'&loginType=school'
     response = requests.get(url)
     school_infos = json.loads(response.text)
     schoolcode=school_infos["schulList"][0]["orgCode"]
-    data={"orgcode":schoolcode,"name":name,"birthday":birth}
-    response = web_request(method_name='POST', url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/loginwithschool", dict_data=data, is_urlencoded=False)
-    token=response['token']
+    data={"orgCode":schoolcode,"name":name,"birthday":birth,"stdntPNo": None,"loginType": "school"}
+    response = requests.post(url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/v2/findUser", data=json.dumps(data), headers={'Content-Type': 'application/json'})
+    token=response.json()['token']
     endpoint = "https://"+info["schoolurl"]+"hcs.eduro.go.kr/registerServey"
-    data = {"rspns01":"1","rspns02":"1","rspns03":None,"rspns04":None,"rspns05":None,"rspns06":None,"rspns07":"0","rspns08":"0","rspns09":"0","rspns10":None,"rspns11":None,"rspns12":None,"rspns13":None,"rspns14":None,"rspns15":None,"rspns00":"Y","deviceUuid":""}
+    data = {"rspns01":"1","rspns02":"1","rspns03":None,"rspns04":None,"rspns05":None,"rspns06":None,"rspns07":None,"rspns08":None,"rspns09":"0","rspns10":None,"rspns11":None,"rspns12":None,"rspns13":None,"rspns14":None,"rspns15":None,"rspns00":"Y","deviceUuid":""}
     headers = {'Content-Type': 'application/json',"Authorization": token}
     response=requests.post(endpoint, data=json.dumps(data), headers=headers).json()
     return response
+    
+print(selfcheck("이름","생년월일","지역","학교이름","학교등급"))
