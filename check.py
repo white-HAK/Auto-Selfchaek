@@ -158,4 +158,4 @@ def selfcheck(sname, birth, area, schoolname, schoollevel):
     response=requests.post(endpoint, data=json.dumps(data), headers=headers).json()
     return response
     
-print(selfcheck("이름","생년월일","지역","학교이름","학교등급""))
+print(selfcheck("이름","생년월일","지역","학교이름","학교등급"))
