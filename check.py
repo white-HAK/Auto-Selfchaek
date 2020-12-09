@@ -128,21 +128,34 @@ def encrypt(n):
     emsg = b64encode(cipher_text)
     return emsg.decode('utf-8')
 
-def selfcheck(name, birth, area, schoolname, schoollevel):
-    name = encrypt(name)
+def selfcheck(sname, birth, area, schoolname, schoollevel):
+    name = encrypt(sname)
     birth = encrypt(birth)
     info=schoolinfo(area,schoollevel)
+    # 학교 정보 확인
     url = 'https://hcs.eduro.go.kr/v2/searchSchool?lctnScCode='+str(info["schoolcode"])+'&schulCrseScCode='+str(info["schoollevel"])+'&orgName='+schoolname+'&loginType=school'
     response = requests.get(url)
     school_infos = json.loads(response.text)
     schoolcode=school_infos["schulList"][0]["orgCode"]
-    data={"orgCode":schoolcode,"name":name,"birthday":birth,"stdntPNo": None,"loginType": "school"}
+    # 학생 정보 불러오기 위한 token 확인
+    data={"orgCode":schoolcode,"name":name,"birthday":birth,"stdntPNo":None,"loginType":"school"}
     response = requests.post(url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/v2/findUser", data=json.dumps(data), headers={'Content-Type': 'application/json'})
     token=response.json()['token']
+    #최종 token불러오기 위한 학생정보 확인
+    headers={'Content-Type': 'application/json', "Authorization": token}
+    response = requests.post(url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/v2/selectUserGroup", headers=headers)
+    userPNo = response.json()[0]['userPNo']
+    token = response.json()[0]['token']
+    #최종 token 발급
+    data={"orgCode":schoolcode,"userPNo": userPNo}
+    headers={'Content-Type': 'application/json', "Authorization": token}
+    response = requests.post(url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/v2/getUserInfo", data=json.dumps(data), headers=headers)
+    token=response.json()['token']
+    #자가진단 정보 입력
     endpoint = "https://"+info["schoolurl"]+"hcs.eduro.go.kr/registerServey"
-    data = {"rspns01":"1","rspns02":"1","rspns03":None,"rspns04":None,"rspns05":None,"rspns06":None,"rspns07":None,"rspns08":None,"rspns09":"0","rspns10":None,"rspns11":None,"rspns12":None,"rspns13":None,"rspns14":None,"rspns15":None,"rspns00":"Y","deviceUuid":""}
-    headers = {'Content-Type': 'application/json',"Authorization": token}
+    data = {"rspns01":"1","rspns02":"1","rspns03":None,"rspns04":None,"rspns05":None,"rspns06":None,"rspns07":None,"rspns08":None,"rspns09":"0","rspns10":None,"rspns11":None,"rspns12":None,"rspns13":None,"rspns14":None,"rspns15":None,"rspns00":"Y","deviceUuid":"","upperToken":token,"upperUserNameEncpt":sname}
+    headers = {'Content-Type': 'application/json;charset=UTF-8',"Authorization": token}
     response=requests.post(endpoint, data=json.dumps(data), headers=headers).json()
     return response
     
-print(selfcheck("이름","생년월일","지역","학교이름","학교등급"))
+print(selfcheck("이름","생년월일","지역","학교이름","학교등급""))
