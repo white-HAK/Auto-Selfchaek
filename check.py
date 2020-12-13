@@ -128,7 +128,7 @@ def encrypt(n):
     emsg = b64encode(cipher_text)
     return emsg.decode('utf-8')
 
-def selfcheck(sname, birth, area, schoolname, schoollevel):
+def selfcheck(sname, birth, area, pw, schoolname, schoollevel):
     name = encrypt(sname)
     birth = encrypt(birth)
     info=schoolinfo(area,schoollevel)
@@ -141,6 +141,11 @@ def selfcheck(sname, birth, area, schoolname, schoollevel):
     data={"orgCode":schoolcode,"name":name,"birthday":birth,"stdntPNo":None,"loginType":"school"}
     response = requests.post(url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/v2/findUser", data=json.dumps(data), headers={'Content-Type': 'application/json'})
     token=response.json()['token']
+    #비밀번호
+    headers={'Content-Type': 'application/json', "Authorization": token}
+    data={"password":str(encrypt(str(pw)))}
+    response = requests.post(url="https://"+info['schoolurl']+"hcs.eduro.go.kr/v2/validatePassword", headers=headers, data=json.dumps(data))
+    token=str(response.json())
     #최종 token불러오기 위한 학생정보 확인
     headers={'Content-Type': 'application/json', "Authorization": token}
     response = requests.post(url="https://"+info["schoolurl"]+"hcs.eduro.go.kr/v2/selectUserGroup", headers=headers)
@@ -158,4 +163,4 @@ def selfcheck(sname, birth, area, schoolname, schoollevel):
     response=requests.post(endpoint, data=json.dumps(data), headers=headers).json()
     return response
     
-print(selfcheck("이름","생년월일","지역","학교이름","학교등급"))
+print(selfcheck("권도한","070604","경북","1234", "안동중","중"))
