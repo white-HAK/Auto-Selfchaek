@@ -163,4 +163,4 @@ def selfcheck(sname, birth, area, pw, schoolname, schoollevel):
     response=requests.post(endpoint, data=json.dumps(data), headers=headers).json()
     return response
     
-print(selfcheck("권도한","070604","경북","1234", "안동중","중"))
+print(selfcheck("이름","생년월일","지역","비밀번호", "학교명",""))
